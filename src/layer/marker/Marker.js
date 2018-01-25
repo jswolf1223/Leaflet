@@ -175,6 +175,8 @@ L.Marker = L.Class.extend({
 	},
 
 	_removeIcon: function () {
+		this._deinitInteraction();
+
 		if (this.options.riseOnHover) {
 			L.DomEvent
 			    .off(this._icon, 'mouseover', this._bringToFront)
@@ -185,6 +187,29 @@ L.Marker = L.Class.extend({
 
 		this._icon = null;
 	},
+
+	_deinitInteraction: function () {
+
+ 		if (!this.options.clickable) { return; }
+
+ 		var icon = this._icon,
+ 		    events = ['dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
+
+ 		L.DomEvent.off(icon, 'click', this._onMouseClick, this);
+ 		L.DomEvent.off(icon, 'keypress', this._onKeyPress, this);
+
+ 		for (var i = 0; i < events.length; i++) {
+ 			L.DomEvent.off(icon, events[i], this._fireMouseEvent, this);
+ 		}
+
+ 		/*if (L.Handler.MarkerDrag) {
+ 			this.dragging = new L.Handler.MarkerDrag(this);
+
+ 			if (this.options.draggable) {
+ 				this.dragging.enable();
+ 			}
+ 		}*/
+ 	},
 
 	_removeShadow: function () {
 		if (this._shadow) {
